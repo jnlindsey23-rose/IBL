@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inquiry-Based Learning in Elementary Education</title>
+<style>
+:root{
+  --navy:#1B2F52; --teal:#17707A; --mustard:#D4A024; --black:#111111; --cream:#FBF6E9;
+  --glow:rgba(46,139,255,.75); --green:#CFEFD0; --red:#F6CFCF;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Aptos,Arial,"Helvetica Neue",sans-serif;background:#e9e4d6;color:var(--black);font-size:clamp(1.05rem,2vw,20pt);line-height:1.4}
+#app{max-width:1200px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--cream);box-shadow:0 0 30px rgba(0,0,0,.15)}
+header.top{background:var(--navy);color:#fff;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;font-size:.7em}
+header.top .bar{flex:1;max-width:340px;height:8px;background:rgba(255,255,255,.25);border-radius:4px;margin:0 16px;overflow:hidden}
+header.top .bar i{display:block;height:100%;background:var(--mustard);width:0;transition:width .3s}
+main{flex:1;position:relative}
+.slide{padding:28px 40px 110px;min-height:calc(100vh - 50px);position:relative}
+.slide[hidden]{display:none}
+h1{color:var(--navy);font-size:clamp(1.75rem,4vw,36pt);line-height:1.15;margin:0 0 14px}
+h2{color:var(--navy);font-size:1.15em;margin:0 0 8px}
+.sub{font-weight:700;color:var(--black);margin:0 0 8px}
+p{margin:0 0 .8em}
+em.i{font-style:italic}
+.center{text-align:center}
+/* buttons */
+.btn{font:inherit;font-size:.8em;font-weight:700;border:0;cursor:pointer;padding:.55em 1.3em;color:#fff;border-radius:4px}
+.btn.teal{background:var(--teal)}
+.btn.navy{background:var(--navy);border-radius:14px}
+.btn.mustard{background:var(--mustard);color:var(--black)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:hover:not(:disabled){filter:brightness(1.15);box-shadow:0 0 0 3px var(--glow)}
+:focus-visible{outline:4px solid #2E8BFF;outline-offset:2px}
+.nav{position:absolute;left:40px;right:40px;bottom:28px;display:flex;justify-content:space-between;align-items:center}
+.backlink{background:none;border:0;font:inherit;font-size:.7em;color:var(--navy);text-decoration:underline;cursor:pointer}
+.hidden{display:none!important}
+.glow:hover,.glow:focus-visible{box-shadow:0 0 0 4px rgba(46,139,255,.5),0 0 20px 5px var(--glow)}
+/* slide 1 */
+.s1{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:start}
+.s1 .img{border-radius:8px;overflow:hidden;border:3px solid var(--navy)}
+.s1 .text{padding-top:40px}
+.disclosure{position:absolute;left:40px;bottom:30px;max-width:55%;font-size:.55em;color:#444}
+.disclosure b{color:var(--navy)}
+/* slide 2 */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:16px 0}
+.flash{background:#fff;border:3px solid var(--navy);border-radius:10px;padding:18px;text-align:left;font:inherit;font-size:.8em;cursor:pointer;color:var(--black)}
+.flash h3{margin:0 0 6px;color:var(--navy);font-size:1.1em}
+.flash .go{display:inline-block;margin-top:8px;color:var(--teal);font-weight:700}
+.think{font-style:italic;background:#fff;border-left:6px solid var(--mustard);padding:10px 14px}
+/* overlay layers */
+#overlay{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;z-index:50;padding:20px;align-items:center;justify-content:center;overflow:auto}
+#overlay.show{display:flex}
+#overlay.right{justify-content:flex-end}
+#overlay.left{justify-content:flex-start}
+.layer{background:#fff;border:4px solid var(--navy);border-radius:12px;padding:26px;width:min(560px,100%);max-height:94vh;overflow:auto}
+.layer.wide{width:min(820px,100%)}
+.layer h2{font-size:1.2em}
+.layer .close{margin-top:14px}
+/* slide 3 */
+.defbox{border:3px solid var(--navy);border-radius:8px;padding:12px 18px;background:#fff;margin-bottom:14px;font-size:.85em}
+.s3 svg{max-width:420px;width:100%;display:block;margin:0 auto}
+.node{cursor:pointer;outline:none}
+.node circle{transition:filter .2s}
+.node:hover circle,.node:focus circle,.node.active circle{filter:drop-shadow(0 0 8px #2E8BFF) drop-shadow(0 0 14px #2E8BFF)}
+.explain{min-height:4.2em;background:#fff;border:3px solid var(--teal);border-radius:8px;padding:10px 16px;font-size:.85em;margin-top:6px}
+/* slide 4 */
+ol.steps{padding:0;list-style:none;display:grid;gap:10px;counter-reset:s;font-size:.9em}
+ol.steps li{counter-increment:s;display:flex;align-items:center;gap:14px;background:#fff;border:3px solid var(--navy);border-radius:8px;padding:8px 14px;font-weight:700;color:var(--navy)}
+ol.steps li::before{content:counter(s);background:var(--teal);color:#fff;border-radius:50%;width:1.9em;height:1.9em;display:grid;place-items:center;flex:none}
+.note{background:#fff;border-left:6px solid var(--mustard);padding:10px 14px;font-style:italic;font-size:.9em}
+/* slide 5 */
+.pool,.slots{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 16px}
+.pool{min-height:80px;padding:10px;border:2px dashed #9aa5b8;border-radius:8px;background:rgba(255,255,255,.5)}
+.dcard{background:#fff;border:3px solid var(--navy);border-radius:6px;font:inherit;font-size:.7em;font-weight:700;color:var(--navy);padding:10px 12px;cursor:grab;width:150px;min-height:74px;display:grid;place-items:center;text-align:center}
+.dcard.sel{box-shadow:0 0 0 4px var(--glow)}
+.slotwrap{width:160px}
+.slotlabel{font-weight:700;color:var(--navy);font-size:.8em;text-align:center}
+.slot{width:160px;height:90px;border:3px solid var(--navy);border-radius:6px;background:#fff;display:grid;place-items:center;padding:4px;cursor:pointer;font:inherit}
+.slot.over{box-shadow:0 0 0 4px var(--glow)}
+.slot .dcard{border:0;width:100%;min-height:0;background:transparent;cursor:grab}
+.slots.ok .slot{background:var(--green);border-color:#2f7d32}
+.slots.bad .slot{background:var(--red);border-color:#a33}
+.status{font-weight:700;min-height:1.5em}
+/* slide 6 */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:12px 0}
+.col{background:#fff;border:3px solid var(--navy);border-radius:10px;overflow:hidden;font-size:.85em}
+.col .pic{border-bottom:3px solid var(--navy)}
+.col h2{background:var(--navy);color:#fff;margin:0;padding:8px 16px}
+.col.learner h2{background:var(--teal)}
+.col ul{margin:10px 0;padding:0 20px 0 36px}
+.col li{margin-bottom:4px}
+/* slide 7 */
+.s7{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;align-items:start}
+.s7 .img{border:3px solid var(--navy);border-radius:8px;overflow:hidden}
+.dec{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;position:relative}
+.dec .chk{margin-left:auto;font-size:1.3em;visibility:hidden}
+.dec.done .chk{visibility:visible;color:var(--mustard)}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:.8em;background:#fff;border:3px solid var(--navy);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;color:var(--black)}
+.opt:hover{box-shadow:0 0 0 4px rgba(46,139,255,.5)}
+.opt.sel{background:#dbe7ff}
+.fb{margin-top:12px;padding:12px 16px;border-radius:8px;font-size:.8em;border:3px solid}
+.fb.good{background:var(--green);border-color:#2f7d32}
+.fb.bad{background:#FFF1D0;border-color:var(--mustard)}
+/* slide 8 */
+.ben{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.ben div{background:#fff;border-top:8px solid var(--teal);border-radius:8px;padding:12px 16px;font-size:.8em;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.ben div:nth-child(2){border-color:var(--navy)}
+.ben div:nth-child(3){border-color:var(--mustard)}
+.ben div:nth-child(4){border-color:var(--black)}
+.ben h3{margin:0 0 4px;color:var(--navy);font-size:1.05em}
+.video{aspect-ratio:16/9;max-width:640px;background:var(--navy);color:#fff;display:grid;place-items:center;text-align:center;border-radius:8px;padding:16px;font-size:.8em}
+.video iframe{width:100%;height:100%;border:0}
+/* slide 9 */
+.mf{background:#fff;border:3px solid var(--navy);border-radius:10px;padding:12px 16px;margin-bottom:14px}
+.mf .row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.mf .st{flex:1;min-width:260px;font-size:.85em}
+.mf .st b{color:var(--navy)}
+.mf .opts{display:flex;gap:10px}
+.mf .fbk{margin-top:10px;font-size:.75em;padding:8px 12px;border-radius:6px;border:3px solid;display:none}
+.mf .fbk.show{display:block}
+/* quiz */
+.qwrap{max-width:900px;margin:0 auto}
+.qmeta{color:var(--teal);font-weight:700;font-size:.8em}
+.qtext{font-weight:700;color:var(--navy);font-size:1.05em;margin-bottom:12px}
+.qopt{display:flex;gap:12px;width:100%;text-align:left;font:inherit;font-size:.85em;background:#fff;border:3px solid var(--navy);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;color:var(--black)}
+.qopt b{color:var(--teal)}
+.qopt:hover{box-shadow:0 0 0 4px rgba(46,139,255,.5)}
+.qopt.sel{background:var(--navy);color:#fff}
+.qopt.sel b{color:var(--mustard)}
+.qopt.sel:hover{box-shadow:0 0 0 4px var(--mustard)}
+.score{font-size:2.4em;font-weight:700;color:var(--navy);margin:6px 0}
+.msg{background:#fff;border:3px solid var(--navy);border-radius:10px;padding:14px 18px;text-align:left;max-width:800px;margin:12px auto;font-size:.9em}
+.msg.pass{border-color:#2f7d32;background:#eef9ee}
+.msg.fail{border-color:#a33;background:#fdf0f0}
+.row-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.rv{border:3px solid var(--navy);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.8em;background:#fff}
+.rv.ok{border-left:12px solid #2f7d32}.rv.no{border-left:12px solid #a33}
+.rv h3{margin:0 0 4px;color:var(--navy);font-size:1em}
+/* slide 12 */
+.take{font-size:.85em;padding-left:1.3em}
+textarea{width:100%;min-height:130px;font:inherit;font-size:.8em;padding:10px;border:3px solid var(--navy);border-radius:8px;background:#fff}
+.final{margin-top:14px;padding:14px 18px;background:#fff;border:3px solid var(--teal);border-radius:10px;font-size:.85em}
+@media (max-width:760px){
+  .slide{padding:20px 18px 110px}
+  .nav{left:18px;right:18px}
+  .s1,.s7,.cols,.cards,.ben{grid-template-columns:1fr}
+  .s1 .text{padding-top:0}
+  .disclosure{position:static;max-width:100%;margin-top:10px}
+  .overlay.left,.overlay.right{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top">
+  <span>Inquiry-Based Learning · Module 1</span>
+  <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+  <span id="count" aria-live="polite">Slide 1 of 12</span>
+</header>
+<main>
+
+<!-- SLIDE 1 -->
+<section class="slide" data-title="Title">
+  <div class="s1">
+    <div class="text">
+      <h1 tabindex="-1">Inquiry-Based Learning in Elementary Education</h1>
+      <p class="sub" style="font-weight:400;font-style:italic">From asking questions to building understanding</p>
+    </div>
+    <div class="img" role="img" aria-label="Illustration of excited students doing a science experiment">
+      <svg viewBox="0 0 400 260" width="100%"><rect width="400" height="260" fill="#cfe6e8"/>
+        <rect y="190" width="400" height="70" fill="#8b6b43"/>
+        <circle cx="110" cy="105" r="42" fill="#5a3a22"/><rect x="62" y="145" width="96" height="60" rx="18" fill="#1B2F52"/>
+        <circle cx="96" cy="100" r="10" fill="none" stroke="#fff" stroke-width="4"/><circle cx="126" cy="100" r="10" fill="none" stroke="#fff" stroke-width="4"/>
+        <circle cx="290" cy="110" r="38" fill="#f1c9a5"/><rect x="246" y="148" width="90" height="58" rx="18" fill="#D4A024"/>
+        <path d="M270 110 q20 20 40 0" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M200 150 h30 l14 40 h-58z" fill="#17707A" opacity=".85"/><rect x="205" y="120" width="20" height="30" fill="#17707A" opacity=".6"/>
+        <circle cx="180" cy="175" r="6" fill="#fff" opacity=".7"/></svg>
+    </div>
+  </div>
+  <p class="disclosure"><b>AI Disclosure:</b> GenAI was used to help build this educational module. Specifically, ChatGPT to outline the design and the assessment questions.</p>
+  <div class="nav"><span></span><button class="btn teal" data-go="1">Let’s Begin!</button></div>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Two Classrooms, One Topic</h1>
+  <p class="sub">Imagine two third-grade classrooms</p>
+  <p>Both classes are learning about what plants need to grow. The teachers have the same learning goal, but they approach it differently.</p>
+  <div class="cards">
+    <button class="flash glow" id="fc1"><h3>Classroom A: Learn the Facts</h3>The teacher explains what plants need to grow. Students take notes, label a diagram, and answer questions from the textbook.<br><span class="go">Click to explore more about Classroom A ›</span></button>
+    <button class="flash glow" id="fc2"><h3>Classroom B: Investigate the Question</h3>Students wonder why two plants are growing differently. They compare observations, discuss possible explanations, and gather evidence.<br><span class="go">Click to explore more about Classroom B ›</span></button>
+  </div>
+  <p class="think">Take a second to think: which classroom gives students more opportunities to investigate a question and develop an explanation?</p>
+  <div class="nav"><button class="backlink" data-go="0">← Back</button><button class="btn teal" data-go="2">Continue</button></div>
+</section>
+
+<!-- SLIDE 3 -->
+<section class="slide s3" hidden>
+  <h1 tabindex="-1">What Is Inquiry-Based Learning?</h1>
+  <div class="defbox"><b>Definition:</b> <em>Inquiry-based learning is an approach in which learners explore meaningful questions, investigate ideas, use evidence, and develop explanations or solutions with appropriate teacher guidance.</em></div>
+  <p style="font-style:italic;font-size:.8em;margin-bottom:4px">Instructions: Hover over (or tap) a circle to learn more about what makes an effective inquiry lesson.</p>
+  <svg viewBox="0 0 400 270" role="group" aria-label="Interconnected circles: Ask, Investigate, Explain">
+    <path d="M200 55 A110 110 0 0 1 305 195" fill="none" stroke="#17707A" stroke-width="7"/>
+    <path d="M305 195 A110 110 0 0 1 95 195" fill="none" stroke="#D4A024" stroke-width="7"/>
+    <path d="M95 195 A110 110 0 0 1 200 55" fill="none" stroke="#1B2F52" stroke-width="7"/>
+    <circle cx="200" cy="140" r="38" fill="#f1efe3"/><text x="200" y="137" text-anchor="middle" font-size="13" fill="#555">Inquiry</text><text x="200" y="153" text-anchor="middle" font-size="13" fill="#555">Learning</text>
+    <g class="node" tabindex="0" role="button" aria-label="Ask" data-k="0"><circle cx="200" cy="55" r="36" fill="#1B2F52"/><text x="200" y="61" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">Ask</text></g>
+    <g class="node" tabindex="0" role="button" aria-label="Investigate" data-k="1"><circle cx="305" cy="195" r="40" fill="#17707A"/><text x="305" y="200" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">Investigate</text></g>
+    <g class="node" tabindex="0" role="button" aria-label="Explain" data-k="2"><circle cx="95" cy="195" r="38" fill="#D4A024"/><text x="95" y="201" text-anchor="middle" fill="#111" font-size="16" font-weight="700">Explain</text></g>
+  </svg>
+  <div class="explain" id="explain" aria-live="polite">Hover over a circle to see more.</div>
+  <div class="nav"><button class="backlink" data-go="1">← Back</button><button class="btn teal" data-go="3">Continue</button></div>
+</section>
+
+<!-- SLIDE 4 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Understanding the Inquiry Process</h1>
+  <p>Although inquiry-based learning can look different depending on the question being explored, students generally move through several important stages. These stages help students investigate questions, make sense of information, and develop explanations. Five steps of the inquiry process:</p>
+  <ol class="steps"><li>Ask a Question</li><li>Investigate</li><li>Examine Evidence</li><li>Develop an Explanation</li><li>Reflect and Revise</li></ol>
+  <p class="note">Inquiry is not always a perfectly linear process. Students may revisit questions, collect additional evidence, or revise their explanations.</p>
+  <div class="nav"><button class="backlink" data-go="2">← Back</button><button class="btn teal" data-go="4">Continue</button></div>
+</section>
+
+<!-- SLIDE 5 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Can You Put the Inquiry Process in Order?</h1>
+  <p>Now that you’ve been introduced to the stages of inquiry-based learning, let’s see if you can put them into the correct sequence. Drag each stage into the appropriate space. <span style="font-size:.75em">(On a touch screen or keyboard: select a card, then select a space.)</span></p>
+  <div class="pool" id="pool" aria-label="Stages to place"></div>
+  <div class="slots" id="slots"></div>
+  <div class="row-btns" style="justify-content:flex-start">
+    <button class="btn navy" id="dSubmit" disabled>Submit</button>
+    <button class="btn mustard hidden" id="dRetry">Try again</button>
+  </div>
+  <p class="status" id="dStatus" role="status"></p>
+  <div class="nav"><button class="backlink" data-go="3">← Back</button><button class="btn teal hidden" id="dNext" data-go="5">Continue</button></div>
+</section>
+
+<!-- SLIDE 6 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">The Teacher’s Role vs. The Learner’s Role</h1>
+  <p class="sub">Who Does What During Inquiry?</p>
+  <p style="font-size:.85em"><em>Inquiry-based learning shifts much of the responsibility for exploring and constructing understanding to students. However, teachers remain essential in guiding the learning process.</em></p>
+  <div class="cols">
+    <div class="col">
+      <div class="pic" role="img" aria-label="Illustration of a teacher guiding a group of students"><svg viewBox="0 0 400 150" width="100%"><rect width="400" height="150" fill="#e6eef5"/><circle cx="120" cy="50" r="24" fill="#8a5a3a"/><rect x="88" y="76" width="64" height="74" rx="16" fill="#1B2F52"/><circle cx="240" cy="75" r="18" fill="#f1c9a5"/><rect x="220" y="95" width="40" height="55" rx="12" fill="#D4A024"/><circle cx="310" cy="80" r="18" fill="#6b4226"/><rect x="290" y="100" width="40" height="50" rx="12" fill="#17707A"/><rect x="180" y="120" width="60" height="30" fill="#fff" stroke="#1B2F52" stroke-width="3"/></svg></div>
+      <h2>The Teacher</h2>
+      <ul><li>Establishes learning goals.</li><li>Introduces meaningful questions.</li><li>Provides resources and materials.</li><li>Models and teaches when needed.</li><li>Asks guiding questions.</li><li>Provides feedback and support.</li></ul>
+    </div>
+    <div class="col learner">
+      <div class="pic" role="img" aria-label="Illustration of two students doing a science experiment"><svg viewBox="0 0 400 150" width="100%"><rect width="400" height="150" fill="#e4f1f1"/><circle cx="130" cy="55" r="24" fill="#6b4226"/><rect x="100" y="80" width="60" height="70" rx="16" fill="#D4A024"/><circle cx="270" cy="55" r="24" fill="#f3d3b0"/><rect x="240" y="80" width="60" height="70" rx="16" fill="#fff" stroke="#ccc"/><rect x="170" y="70" width="14" height="40" fill="#17707A" opacity=".7"/><rect x="205" y="60" width="14" height="50" fill="#17707A" opacity=".7"/></svg></div>
+      <h2>The Learner</h2>
+      <ul><li>Ask questions.</li><li>Explore ideas.</li><li>Collect information.</li><li>Examine evidence.</li><li>Develop explanations.</li><li>Shares and reflects on learning.</li></ul>
+    </div>
+  </div>
+  <p class="note"><b>Student-centered does not mean teacher-absent.</b> Effective inquiry requires both active learners and intentional teachers.</p>
+  <div class="nav"><button class="backlink" data-go="4">← Back</button><button class="btn teal" data-go="6">Continue</button></div>
+</section>
+
+<!-- SLIDE 7 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Inquiry in Action</h1>
+  <div class="s7">
+    <div>
+      <p style="font-size:.85em">Let’s see what inquiry-based learning can look like in an elementary classroom. As you move through this scenario, consider how students develop questions, investigate ideas, and use evidence to understand the world around them.</p>
+      <p style="font-size:.85em"><em>During a science lesson, a group of third-grade students notices that two plants in their classroom have grown differently. One plant is tall and healthy, while the other is smaller and has yellowing leaves. A student asks: “Why did these plants grow differently if they were planted at the same time?”</em></p>
+    </div>
+    <div>
+      <div class="img" role="img" aria-label="Illustration of two potted plants: one tall and healthy, one small with yellowing leaves"><svg viewBox="0 0 400 220" width="100%"><rect width="400" height="220" fill="#fff3d6"/><rect y="170" width="400" height="50" fill="#d9c9ad"/>
+        <path d="M110 170 V60" stroke="#2e8b3c" stroke-width="8"/><ellipse cx="85" cy="70" rx="38" ry="16" fill="#3fa84a" transform="rotate(-30 85 70)"/><ellipse cx="140" cy="55" rx="38" ry="16" fill="#3fa84a" transform="rotate(25 140 55)"/><ellipse cx="90" cy="110" rx="32" ry="13" fill="#3fa84a" transform="rotate(-20 90 110)"/>
+        <path d="M60 150 h100 l-10 40 h-80z" fill="#c75b32"/>
+        <path d="M300 170 q-5 -40 20 -60" stroke="#9a9a2f" stroke-width="6" fill="none"/><ellipse cx="325" cy="108" rx="24" ry="10" fill="#cfc545" transform="rotate(30 325 108)"/><ellipse cx="290" cy="130" rx="20" ry="9" fill="#b5a93a" transform="rotate(-30 290 130)"/>
+        <path d="M250 160 h100 l-10 36 h-80z" fill="#c75b32"/></svg></div>
+      <div style="margin-top:14px" id="decBtns"></div>
+    </div>
+  </div>
+  <div class="nav"><button class="backlink" data-go="5">← Back</button><button class="btn teal hidden" id="s7next" data-go="7">Continue</button></div>
+</section>
+
+<!-- SLIDE 8 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Why Does Inquiry-Based Learning Matter?</h1>
+  <p style="font-size:.85em"><em>When students have opportunities to explore questions, investigate ideas, and develop explanations, they practice skills that extend beyond a single lesson.</em></p>
+  <div class="ben">
+    <div><h3>1. Engagement and Curiosity</h3>Students become active participants in learning by exploring questions that interest them and connecting learning to real-world experiences.</div>
+    <div><h3>2. Critical Thinking</h3>Students evaluate information, consider different possibilities, and use evidence to support their thinking.</div>
+    <div><h3>3. Meaningful Understanding</h3>Students connect new information to prior knowledge and develop explanations instead of only memorizing facts.</div>
+    <div><h3>4. Communication and Collaboration</h3>Students share ideas, listen to different perspectives, explain their reasoning, and learn from others.</div>
+  </div>
+  <p style="font-size:.85em"><em>Watch this video to get a deeper look into the benefits of Inquiry-Based Learning.</em></p>
+  <div class="video" id="videoBox"></div>
+  <div class="nav"><button class="backlink" data-go="6">← Back</button><button class="btn teal" data-go="8">Continue</button></div>
+</section>
+
+<!-- SLIDE 9 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Myth or Fact?</h1>
+  <p style="font-size:.85em">Although inquiry-based learning encourages student exploration, it is often misunderstood. Let’s examine a few common assumptions. <em>Hover over (or tap) the option you think is correct.</em></p>
+  <div id="mfList"></div>
+  <div class="nav"><button class="backlink" data-go="7">← Back</button><button class="btn teal" data-go="9">Continue</button></div>
+</section>
+
+<!-- SLIDE 10 -->
+<section class="slide" hidden>
+  <div id="quizIntro" class="center qwrap">
+    <h1 tabindex="-1">Knowledge Check</h1>
+    <p>You have explored the inquiry process, the roles of teachers and learners, and the benefits of inquiry-based learning. Complete the following questions to demonstrate your understanding and receive your score at the end.</p>
+    <p style="font-size:.8em"><em>There are 10 questions. You won’t see your score or feedback until the very last screen.</em></p>
+    <button class="btn navy" id="quizStart">Start</button>
+  </div>
+  <div id="quizQ" class="qwrap hidden"></div>
+</section>
+
+<!-- SLIDE 11 -->
+<section class="slide center" hidden>
+  <h1 tabindex="-1">Results</h1>
+  <div class="score" id="scoreTxt"></div>
+  <div class="msg" id="scoreMsg"></div>
+  <div class="row-btns">
+    <button class="btn navy" id="btnReview">Review</button>
+    <button class="btn mustard hidden" id="btnRetry">Try Again</button>
+  </div>
+  <div class="nav"><span></span><button class="btn teal hidden" id="btnS12" data-go="11">Continue</button></div>
+</section>
+
+<!-- SLIDE 12 -->
+<section class="slide" hidden>
+  <h1 tabindex="-1">Bringing It All Together</h1>
+  <p style="font-size:.9em">Main takeaways that you can take on your teaching with inquiry journey are these:</p>
+  <ol class="take">
+    <li>Inquiry-based learning is a student-centered approach built around questions, exploration, and investigation.</li>
+    <li>Inquiry-based learning promotes curiosity, critical thinking, and meaningful learning.</li>
+    <li>Effective inquiry-based learning includes meaningful questions, active investigation, evidence-based reasoning, and teacher guidance.</li>
+  </ol>
+  <p style="font-size:.85em"><em>Take a second to reflect. Read the question below and answer it by typing in the text box. Once you are finished, press “Submit” to finish up this module!</em></p>
+  <p style="font-size:.85em"><b>Think about your current understanding of teaching and learning. How might providing students with more opportunities to ask questions, investigate ideas, and develop explanations change their learning experiences?</b></p>
+  <label for="reflect" class="sr" style="position:absolute;left:-9999px">Your reflection</label>
+  <textarea id="reflect" placeholder="Type your reflection here…"></textarea>
+  <div style="margin-top:10px"><button class="btn navy" id="rSubmit">Submit</button></div>
+  <div class="final hidden" id="finalMsg" role="status"><em>You have now explored the foundations of inquiry-based learning. In the next portion of this course, you will examine what effective inquiry looks like across elementary subject areas and grade levels, explore ways to support diverse learners, and begin designing your own inquiry-based lesson.</em><p style="margin:.6em 0 0;font-size:.8em">You may now close this window and return to Moodle.</p></div>
+  <div class="nav"><button class="backlink" data-go="10">← Back</button><span></span></div>
+</section>
+
+</main>
+</div>
+
+<div id="overlay" role="dialog" aria-modal="true"><div class="layer" id="layer"></div></div>
+
+<script>
+/* ===== Settings ===== */
+// Paste the embed URL of the "Benefits of Inquiry-Based Learning" video here, e.g. "https://www.youtube.com/embed/VIDEO_ID"
+const VIDEO_URL = "";
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const slides = $$('main > .slide');
+let cur = 0;
+
+function go(n){
+  cur = n;
+  slides.forEach((s,i)=>s.hidden = i!==n);
+  $('#prog').style.width = ((n+1)/12*100)+'%';
+  $('#count').textContent = 'Slide '+(n+1)+' of 12';
+  window.scrollTo(0,0);
+  if(n===9) resetQuizView();
+  if(n===10) renderResults();
+  const h = $('h1', slides[n]); if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-go]');
+  if(b) go(+b.dataset.go);
+});
+
+/* ===== Overlay layers ===== */
+let lastFocus = null, onLayerClose = null;
+function openLayer(html, side, wide, closeCb){
+  lastFocus = document.activeElement; onLayerClose = closeCb||null;
+  const ov = $('#overlay'); ov.className = 'show '+(side||'');
+  $('#layer').className = 'layer'+(wide?' wide':'');
+  $('#layer').innerHTML = html;
+  const c = $('#layer .close') || $('#layer button'); if(c) c.focus();
+}
+function closeLayer(){
+  $('#overlay').className=''; $('#layer').innerHTML='';
+  if(onLayerClose){ onLayerClose(); onLayerClose=null; }
+  if(lastFocus) lastFocus.focus();
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#overlay').classList.contains('show')) closeLayer(); });
+$('#overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeLayer(); });
+$('#layer').addEventListener('click', e=>{ if(e.target.closest('.close')) closeLayer(); });
+
+/* ===== Slide 2 ===== */
+$('#fc1').onclick = ()=>openLayer(`<h2>A teacher-guided approach</h2><p>Students can learn important information through explanation and practice. However, in this example, students have fewer opportunities to investigate a question themselves.</p><button class="btn navy close">Close</button>`,'right');
+$('#fc2').onclick = ()=>openLayer(`<h2>An inquiry-oriented approach</h2><p>Students investigate a question, consider possible explanations, and use observations as evidence. The teacher can still guide the process and provide essential information.</p><button class="btn navy close">Close</button>`,'left');
+
+/* ===== Slide 3 ===== */
+const circleText = [
+ "<b>Ask:</b> Students begin by developing meaningful questions about a topic, observation, or problem. These questions help guide their learning and investigation.",
+ "<b>Investigate:</b> Students explore their questions by gathering information, making observations, conducting experiments, or researching a topic.",
+ "<b>Explain:</b> Students use the evidence they collected to develop explanations, communicate their findings, and demonstrate their understanding."
+];
+$$('.node').forEach(n=>{
+  const show = ()=>{ $$('.node').forEach(x=>x.classList.remove('active')); n.classList.add('active'); $('#explain').innerHTML = circleText[+n.dataset.k]; };
+  n.addEventListener('mouseenter',show); n.addEventListener('focus',show); n.addEventListener('click',show);
+  n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();show();} });
+});
+
+/* ===== Slide 5: drag and drop ===== */
+const STAGES = ["Ask a Question","Investigate","Examine Evidence","Develop an Explanation","Reflect and Revise"];
+let place, selected=null, locked=false;
+function shuffleIds(){
+  let a; do { a=[0,1,2,3,4].sort(()=>Math.random()-.5); } while(a.every((v,i)=>v===i));
+  return a;
+}
+let poolOrder = shuffleIds();
+function resetDnD(){
+  place=[null,null,null,null,null]; selected=null; locked=false; poolOrder=shuffleIds();
+  $('#dRetry').classList.add('hidden'); $('#dStatus').textContent=''; $('#dNext').classList.add('hidden');
+  renderDnD();
+}
+function cardHTML(id){ return `<div class="dcard" draggable="true" tabindex="0" role="button" data-id="${id}" aria-label="${STAGES[id]}${selected===id?' (selected)':''}">${STAGES[id]}</div>`; }
+function renderDnD(){
+  const placed = new Set(place.filter(v=>v!==null));
+  $('#pool').innerHTML = poolOrder.filter(i=>!placed.has(i)).map(cardHTML).join('') || '<span style="font-size:.7em;color:#555">All stages placed — press Submit.</span>';
+  $('#slots').className='slots';
+  $('#slots').innerHTML = place.map((v,i)=>`<div class="slotwrap"><div class="slotlabel">${i+1}</div><div class="slot" data-slot="${i}" tabindex="0" role="button" aria-label="Space ${i+1}${v!==null?', contains '+STAGES[v]:', empty'}">${v!==null?cardHTML(v):''}</div></div>`).join('');
+  $$('#pool .dcard,#slots .dcard').forEach(c=>{ if(selected===+c.dataset.id) c.classList.add('sel'); });
+  $('#dSubmit').disabled = locked || place.some(v=>v===null);
+}
+function putCard(id, slotIdx){
+  if(locked) return;
+  const from = place.indexOf(id);
+  const occupant = place[slotIdx];
+  if(from>-1) place[from] = occupant; // swap
+  place[slotIdx] = id;
+  selected=null; renderDnD();
+}
+function toPool(id){ if(locked) return; const f=place.indexOf(id); if(f>-1) place[f]=null; selected=null; renderDnD(); }
+let dragId=null;
+const s5 = slides[4];
+s5.addEventListener('dragstart',e=>{ const c=e.target.closest('.dcard'); if(!c||locked){e.preventDefault();return;} dragId=+c.dataset.id; e.dataTransfer.setData('text/plain',dragId); e.dataTransfer.effectAllowed='move'; });
+s5.addEventListener('dragover',e=>{ if(e.target.closest('.slot,#pool')){ e.preventDefault(); const s=e.target.closest('.slot'); $$('.slot').forEach(x=>x.classList.toggle('over',x===s)); } });
+s5.addEventListener('dragleave',e=>{ if(!e.relatedTarget||!e.relatedTarget.closest('.slot')) $$('.slot').forEach(x=>x.classList.remove('over')); });
+s5.addEventListener('drop',e=>{
+  $$('.slot').forEach(x=>x.classList.remove('over'));
+  const slot=e.target.closest('.slot'), pool=e.target.closest('#pool');
+  if(dragId===null) return;
+  e.preventDefault();
+  if(slot) putCard(dragId,+slot.dataset.slot); else if(pool) toPool(dragId);
+  dragId=null;
+});
+s5.addEventListener('click',e=>{
+  if(locked) return;
+  const card=e.target.closest('.dcard'), slot=e.target.closest('.slot');
+  if(card){ const id=+card.dataset.id;
+    if(selected!==null && slot && selected!==id){ putCard(selected,+slot.dataset.slot); return; }
+    selected = selected===id?null:id; renderDnD(); return; }
+  if(slot && selected!==null){ putCard(selected,+slot.dataset.slot); return; }
+  if(e.target.closest('#pool') && selected!==null){ toPool(selected); }
+});
+s5.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.matches('.dcard,.slot')){ e.preventDefault(); e.target.click(); }
+});
+$('#dSubmit').onclick = ()=>{
+  locked=true; selected=null;
+  const ok = place.every((v,i)=>v===i);
+  renderDnD();
+  $('#slots').classList.add(ok?'ok':'bad');
+  $$('#slots .dcard').forEach(c=>c.draggable=false);
+  $('#dSubmit').disabled=true;
+  if(ok){ $('#dStatus').textContent='Correct! You put the inquiry process in the right order.'; $('#dNext').classList.remove('hidden'); }
+  else { $('#dStatus').textContent='Not quite. One or more stages are out of order — try again.'; $('#dRetry').classList.remove('hidden'); }
+};
+$('#dRetry').onclick = resetDnD;
+resetDnD();
+
+/* ===== Slide 7: scenario ===== */
+const DEC = [
+ {label:"Decision 1", q:"What should the teacher do first?", stem:"What should happen next?", opts:[
+  ["The teacher immediately explains that plants need sunlight and water to grow.","Background information can be useful, but immediately providing the explanation may limit opportunities for students to explore their own questions.",0],
+  ["The teacher encourages students to develop ideas about why the plants may have grown differently.","Exactly! Encouraging students to develop possible explanations gives them an opportunity to think critically and guide their investigation.",1],
+  ["The teacher tells students the answer and asks them to copy it into their notebooks.","Copying information does not give students an opportunity to investigate or develop their own understanding.",0]]},
+ {label:"Decision 2", q:"What should students investigate?", stem:"Students have suggested several possibilities. What should they do next?", opts:[
+  ["Choose one student’s explanation and move on.","Students need evidence to evaluate their ideas rather than simply choosing an explanation.",0],
+  ["Investigate possible factors such as sunlight, water, and soil conditions.","Correct! Students can investigate different growing conditions and gather information to determine which factors may have influenced the plants.",1],
+  ["Ask the teacher to tell them which explanation is correct.","Teachers can provide support, but students should have opportunities to investigate and examine evidence.",0]]},
+ {label:"Decision 3", q:"How should students use their findings?", stem:"Students observe that the healthier plant received more sunlight. What should they do with this information?", opts:[
+  ["Use their observations as evidence to develop an explanation.","Exactly! Students should use evidence to support their explanations while recognizing that other factors may also contribute.",1],
+  ["Assume sunlight is the only factor that affects plant growth.","Be careful! One observation does not necessarily explain everything. Students should consider additional evidence.",0],
+  ["Stop investigating because they have found one difference.","Finding one possible factor does not mean the investigation is complete. Students may need to consider other evidence.",0]]}
+];
+const decState=[null,null,null];
+function renderDecBtns(){
+  $('#decBtns').innerHTML = DEC.map((d,i)=>`<button class="btn navy dec ${decState[i]!==null?'done':''}" data-d="${i}"><span><span style="opacity:.8">${d.label}</span><br>${d.q}</span><span class="chk" aria-label="${decState[i]!==null?'Answered':''}">✔</span></button>`).join('');
+  $('#s7next').classList.toggle('hidden', decState.some(v=>v===null));
+}
+$('#decBtns').addEventListener('click',e=>{ const b=e.target.closest('[data-d]'); if(b) openDecision(+b.dataset.d); });
+function openDecision(i){
+  const d=DEC[i];
+  const paint = ()=>{
+    $('#layer').innerHTML = `<h2>${d.label}: ${d.q}</h2><p><em>${d.stem}</em></p>`+
+      d.opts.map((o,k)=>`<button class="opt ${decState[i]===k?'sel':''}" data-k="${k}"><b>${'ABC'[k]}.</b> ${o[0]}</button>`).join('')+
+      (decState[i]!==null?`<div class="fb ${d.opts[decState[i]][2]?'good':'bad'}" role="status">${d.opts[decState[i]][1]}</div>`:'')+
+      `<button class="btn navy close">Close</button>`;
+  };
+  openLayer('', 'center', true, renderDecBtns);
+  paint();
+  $('#layer').onclick = e=>{ const o=e.target.closest('.opt'); if(o){ decState[i]=+o.dataset.k; paint(); $('#layer .close').focus(); } };
+}
+renderDecBtns();
+
+/* ===== Slide 8: video ===== */
+$('#videoBox').innerHTML = VIDEO_URL ? `<iframe src="${VIDEO_URL}" title="The Benefits of Inquiry-Based Learning" allowfullscreen></iframe>`
+  : `<div>▶ <b>Video: “The Benefits of Inquiry-Based Learning”</b><br><span style="opacity:.85">Add the embed URL to <code>VIDEO_URL</code> at the top of the script to show the video here.</span></div>`;
+
+/* ===== Slide 9: myth or fact ===== */
+const MF = [
+ {s:"Any hands-on activity is automatically an example of inquiry-based learning.", ans:"Myth",
+  Myth:"Correct! Hands-on activities can support inquiry, but simply completing an activity does not make it inquiry-based. Students should have opportunities to ask questions, investigate ideas, and use evidence to develop understanding.",
+  Fact:"Not quite! Although hands-on activities can support inquiry-based learning, simply participating in an activity does not make it inquiry-based. Students should have opportunities to ask questions, investigate ideas, and use evidence to develop explanations."},
+ {s:"Inquiry-based learning means teachers should allow students to figure everything out independently.", ans:"Myth",
+  Myth:"Exactly! Teachers remain essential. They establish learning goals, provide resources, ask guiding questions, and offer support when students need it.",
+  Fact:"Not quite! Inquiry-based learning does not mean teachers step away from instruction. Teachers play an important role by establishing learning goals, providing resources, asking guiding questions, and supporting student learning."},
+ {s:"Direct instruction can be part of an inquiry-based learning experience.", ans:"Fact",
+  Myth:"Not quite! Inquiry-based learning does not eliminate direct instruction. Teachers can introduce background knowledge, model skills, explain concepts, and clarify misunderstandings when students need additional support.",
+  Fact:"Correct! Teachers may introduce background knowledge, explain concepts, model skills, or clarify misunderstandings when needed. Inquiry-based learning does not eliminate direct instruction; it gives students opportunities to actively construct understanding."}
+];
+$('#mfList').innerHTML = MF.map((m,i)=>`<div class="mf"><div class="row"><div class="st"><b>Statement ${i+1}:</b> <em>${m.s}</em></div><div class="opts"><button class="btn navy glow" data-i="${i}" data-v="Myth">Myth</button><button class="btn navy glow" data-i="${i}" data-v="Fact">Fact</button></div></div><div class="fbk" id="fbk${i}" role="status"></div></div>`).join('');
+function showMF(b){
+  const i=+b.dataset.i, v=b.dataset.v, m=MF[i], f=$('#fbk'+i), ok = m.ans===v;
+  f.textContent = m[v]; f.className='fbk show '+(ok?'good':'bad');
+}
+$('#mfList').addEventListener('mouseover',e=>{ const b=e.target.closest('[data-v]'); if(b) showMF(b); });
+$('#mfList').addEventListener('focusin',e=>{ const b=e.target.closest('[data-v]'); if(b) showMF(b); });
+$('#mfList').addEventListener('click',e=>{ const b=e.target.closest('[data-v]'); if(b) showMF(b); });
+
+/* ===== Slides 10–11: quiz ===== */
+const QUIZ = [
+ {q:"Which of the following best describes inquiry-based learning?",o:["Students memorize information provided by their teacher.","Students explore meaningful questions, investigate ideas, and use evidence to develop explanations.","Students complete hands-on activities without teacher guidance.","Teachers provide students with all the information they need."],a:1,
+  fb:"Inquiry-based learning encourages students to explore meaningful questions, investigate ideas, and use evidence to develop their own explanations. Students take an active role in constructing their understanding rather than simply receiving information."},
+ {q:"What is typically the starting point of an inquiry-based learning experience?",o:["Developing an explanation.","Reflecting on findings.","Asking a meaningful question.","Evaluating a final product."],a:2,
+  fb:"Inquiry begins with a meaningful question that encourages curiosity and investigation. These questions give students a purpose for exploring and developing new understandings."},
+ {q:"What is the fourth stage of the inquiry process?",o:["Ask a Question","Examine Evidence","Develop an Explanation","Investigate"],a:2,
+  fb:"Inquiry generally begins with a question, followed by investigation and examination of evidence. Students then develop explanations and reflect on what they have learned. They may revisit earlier stages as they discover new information but the fourth stage is to develop an explanation."},
+ {q:"What is the teacher’s primary role during inquiry-based learning?",o:["Providing students with every answer.","Allowing students to work independently without support.","Facilitating learning through resources, guiding questions, and feedback.","Focusing only on evaluating the final assignment."],a:2,
+  fb:"Teachers act as facilitators who guide students throughout the inquiry process. They establish learning goals, provide resources, ask guiding questions, and offer support when needed."},
+ {q:"Which example best demonstrates a learner taking an active role in inquiry?",o:["Copying notes from a presentation.","Listening while the teacher explains a concept.","Memorizing definitions before a quiz.","Developing questions and investigating possible answers using evidence."],a:3,
+  fb:"Active learners take responsibility for exploring questions and investigating possible answers. They develop ideas, gather information, and use evidence to construct their understanding."},
+ {q:"Myth or Fact: “Inquiry-based learning requires teachers to eliminate direct instruction.”",o:["Myth","Fact"],a:0,
+  fb:"Direct instruction can still be an important part of inquiry-based learning. Teachers may introduce background knowledge, model skills, and clarify concepts when students need additional guidance."},
+ {q:"A group of students investigates why one plant grew taller than another. They collect observations about sunlight, water, and soil conditions. Which benefit of inquiry-based learning are they demonstrating most directly?",o:["Critical thinking and evidence-based reasoning.","Memorization.","Independent seatwork.","Repetition of information."],a:0,
+  fb:"Critical thinking involves examining information, considering different possibilities, and using evidence to support conclusions. Students demonstrate these skills when they investigate factors that may explain differences in plant growth."},
+ {q:"Why is examining evidence important during an inquiry-based learning experience?",o:["It allows students to finish activities more quickly.","It helps students evaluate information and support their explanations.","It eliminates the need for student questions.","It ensures every student reaches the same conclusion."],a:1,
+  fb:"Examining evidence helps students determine whether their ideas are supported by the information they collect. It encourages students to develop explanations based on reasoning rather than assumptions."},
+ {q:"A student asks why some objects float while others sink. What would be the best next step for the teacher?",o:["Immediately explain density and provide the definition.","Tell students which objects will float before they investigate.","Encourage students to make predictions and test different objects in water.","Ask students to memorize a list of objects that float."],a:2,
+  fb:"Encouraging students to make predictions and test different objects gives them an opportunity to investigate their questions firsthand. This allows students to collect observations and use evidence to develop explanations."},
+ {q:"Which statement best describes the relationship between teachers and learners during inquiry-based learning?",o:["Teachers control every part of the investigation.","Students are entirely responsible for learning without teacher involvement.","Teachers and students share the same responsibilities throughout the lesson.","Students actively construct understanding while teachers provide intentional guidance and support."],a:3,
+  fb:"Inquiry-based learning is student-centered, but it does not remove the teacher’s responsibility. Students actively construct understanding while teachers provide the structure, resources, and guidance necessary for meaningful learning."}
+];
+let answers = Array(10).fill(null), qi = -1;
+function resetQuizView(){ qi=-1; $('#quizIntro').classList.remove('hidden'); $('#quizQ').classList.add('hidden'); }
+$('#quizStart').onclick = ()=>{ answers=Array(10).fill(null); qi=0; renderQ(); };
+function renderQ(){
+  $('#quizIntro').classList.add('hidden'); const w=$('#quizQ'); w.classList.remove('hidden');
+  const q=QUIZ[qi], last = qi===9;
+  w.innerHTML = `<div class="qmeta">Question ${qi+1} of 10</div><h1 style="font-size:clamp(1.4rem,3vw,26pt)" tabindex="-1">Knowledge Check</h1>
+    <div class="qtext">${q.q}</div>`+
+    q.o.map((t,k)=>`<button class="qopt ${answers[qi]===k?'sel':''}" data-k="${k}" aria-pressed="${answers[qi]===k}"><b>${'ABCD'[k]}.</b><span>${t}</span></button>`).join('')+
+    `<div style="text-align:right;margin-top:14px"><button class="btn navy" id="qSubmit" ${answers[qi]===null?'disabled':''}>Submit</button></div>`;
+  w.querySelector('.qtext').setAttribute('tabindex','-1'); w.querySelector('.qtext').focus({preventScroll:true});
+  window.scrollTo(0,0);
+}
+$('#quizQ').addEventListener('click',e=>{
+  const o=e.target.closest('.qopt');
+  if(o){ answers[qi]=+o.dataset.k; $$('#quizQ .qopt').forEach(x=>{const s=x===o; x.classList.toggle('sel',s); x.setAttribute('aria-pressed',s);}); $('#qSubmit').disabled=false; return; }
+  if(e.target.id==='qSubmit'){ if(qi<9){ qi++; renderQ(); } else go(10); }
+});
+function score(){ return answers.reduce((s,a,i)=>s+(a===QUIZ[i].a?1:0),0); }
+function renderResults(){
+  const n=score(), pass=n>=8;
+  $('#scoreTxt').textContent = `${n} / 10 correct (${n*10}%)`;
+  const m=$('#scoreMsg'); m.className='msg '+(pass?'pass':'fail');
+  m.innerHTML = pass ? "<b>Congratulations!!</b> You have evidently defined Inquiry-Based Learning, understand its importance in schools, and identified characteristics of a successful inquiry-based learning lesson. Please press “Review” to review your answers or press “Continue” to move forward to the final slide."
+                     : "Unfortunately your score does not match the passing score to show proficiency for this module. Please press “Review” to review your answers and press “Try Again” to take the test again.";
+  $('#btnS12').classList.toggle('hidden',!pass);
+  $('#btnRetry').classList.toggle('hidden',pass);
+}
+$('#btnRetry').onclick = ()=>{ answers=Array(10).fill(null); go(9); };
+$('#btnReview').onclick = ()=>{
+  const html = `<h2>Review Your Answers</h2>`+QUIZ.map((q,i)=>{
+    const ok=answers[i]===q.a;
+    return `<div class="rv ${ok?'ok':'no'}"><h3>Question ${i+1} — ${ok?'✔ Correct':'✘ Incorrect'}</h3><div>${q.q}</div>
+      <div><b>Your answer:</b> ${answers[i]===null?'(none)':q.o[answers[i]]}</div>
+      ${ok?'':`<div><b>Correct answer:</b> ${q.o[q.a]}</div>`}
+      <div style="margin-top:6px"><em>${q.fb}</em></div></div>`;
+  }).join('')+`<button class="btn navy close">Close</button>`;
+  openLayer(html,'center',true);
+};
+
+/* ===== Slide 12 ===== */
+$('#rSubmit').onclick = ()=>{ $('#finalMsg').classList.remove('hidden'); $('#finalMsg').scrollIntoView({behavior:'smooth',block:'center'}); };
+
+go(0);
+</script>
+</body>
+</html>
